@@ -1,0 +1,72 @@
+variables:
+- group: Snowflake.Database
+- name: DBNAME
+  value: flyway_demo
+- name: flywayartifactName
+  value: DatabaseArtifacts  
+- name: flywayVmImage
+  value: 'ubuntu-16.04'  
+- name: flywayContainerImage
+  value: 'kulmam92/flyway-azure:6.2.3'  
+trigger:
+- master
+
+stages:
+- stage: Build
+  variables:
+  - name: DBNAME_POSTFIX
+    value: _DEV
+  jobs:
+  - template: templates/snowflakeFlywayBuild.yml
+    parameters:
+      jobName: 'BuildDatabase'
+      databaseName: $(DBNAME)
+      databasePostfix: $(DBNAME_POSTFIX)
+      artifactName: $(flywayartifactName)
+      vmImage: $(flywayVmImage)
+      containerImage: $(flywayContainerImage)
+
+- stage: DEV
+  variables:
+  - name: DBNAME_POSTFIX
+    value: _DEV
+  jobs:
+  - template: templates/snowflakeFlywayDeploy.yml
+    parameters:
+      jobName: DEV
+      databaseName: $(DBNAME)
+      databasePostfix: $(DBNAME_POSTFIX)
+      artifactName: $(flywayartifactName)
+      vmImage: $(flywayVmImage)
+      containerImage: $(flywayContainerImage)
+      environmentName: DEV
+
+- stage: QA
+  variables:
+  - name: DBNAME_POSTFIX
+    value: _QA
+  jobs:
+  - template: templates/snowflakeFlywayDeploy.yml
+    parameters:
+      jobName: QA
+      databaseName: $(DBNAME)
+      databasePostfix: $(DBNAME_POSTFIX)
+      artifactName: $(flywayartifactName)
+      vmImage: $(flywayVmImage)
+      containerImage: $(flywayContainerImage)
+      environmentName: QA
+
+- stage: PROD
+  variables:
+  - name: DBNAME_POSTFIX
+    value: '' # Empty string for PROD
+  jobs:
+  - template: templates/snowflakeFlywayDeploy.yml
+    parameters:
+      jobName: PROD
+      databaseName: $(DBNAME)
+      databasePostfix: $(DBNAME_POSTFIX)
+      artifactName: $(flywayartifactName)
+      vmImage: $(flywayVmImage)
+      containerImage: $(flywayContainerImage)
+      environmentName: PROD
