@@ -4,6 +4,11 @@ This repository contains two things.
 * Sample flyway migration script for database "flyway_demo".
 * Common modules that can be used to set up Azure DevOps pipeline for Snowflake deployment using flyway.
 
+
+Refer to the below page for Step-by-Step instructions on how to use this.
+
+[Snowflake CI/CD using Flyway and Azure DevOps Pipeline](/docs/index.md)
+
 # Getting Started
 The below are incldued files.
 ```
